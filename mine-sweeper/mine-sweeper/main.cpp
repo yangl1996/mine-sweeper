@@ -12,6 +12,9 @@ using namespace std;
  number 9   : 插上了棋子
  number 10  : 插上了问号
  */
+
+// paintStatus
+// 用于打印某位置的棋盘情况。
 void paintStatus(int status)
 {
     switch (status)
@@ -51,7 +54,8 @@ void paintStatus(int status)
     }
 }
 
-// the size is 50 * 50
+// 该函数用于打印棋盘。数据来自status数组，里面记录了周边的雷数、是否标记了棋子等等。
+// 棋盘的最大大小是50。
 void paint(int (*status)[52], int col, int row)
 {
     cout << "┌";
@@ -92,29 +96,39 @@ void paint(int (*status)[52], int col, int row)
     cout << "─" << "┘" << endl;
 }
 
+// 主函数
 int main()
 {
-    srand((unsigned)(time(NULL)));
+    srand((unsigned)(time(NULL))); // 随机数seeding
+    
+    // initialization
     int mine[52][52] = {0};
     int row, col, num;
     cin >> row >> col >> num;
+    
+    // 输入的地雷数不应该大于棋盘大小的一半
     while (num > row * col / 2)
     {
         cout << "Too many mines! Try smaller number." << endl;
         cout << "Retype number of mines:" << endl;
         cin >> num;
     }
-    int a = 1, b = 1;
+    
+    // 下面随机生成棋盘
+    int a = 1, b = 1; // 遍历棋盘。a、b用于记录现在遍历到的位置。
     while (num > 0)
-    {        
+    {
+        // 如果随机数满足条件，那么就可以标上地雷
         if ((rand() % (row * col)) <= num)
         {
-            if (mine[a][b] != 1)
+            if (mine[a][b] != 1) // 如果已经标上过了，那么就不用再标了
             {
                 mine[a][b] = 1;
                 num--;
             }
         }
+        
+        // 下面用来处理遍历位置的移动。从左向右挨个遍历，并且处理换行、换列、回到第一个等问题。
         if (a != row)
         {
             if (b != col)
@@ -140,6 +154,8 @@ int main()
             }
         }
     }
+    
+    // 下面的内容仍在处理调试中。
     int status[52][52] = {0}; //Status是经过计算的结果。也就是说，需要根据布雷计算出附近的地雷数，存在status中
     for (int i = 1; i <= row; i++)
     {
