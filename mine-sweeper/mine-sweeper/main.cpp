@@ -1,8 +1,32 @@
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
+#include <termios.h>
+#include <stdio.h>
+
 
 using namespace std;
+
+// 用于翻开棋盘。需要调试。
+void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col, int row)
+{
+    if (!uncovered[row][col] || (numdistb[row][col] != 0) || (mine[row][col] == 1))
+    {
+        return;
+    }
+    else
+    {
+        uncovered[row][col] = 1;
+    }
+    uncover(uncovered, numdistb, mine, col - 1, row - 1);
+    uncover(uncovered, numdistb, mine, col, row - 1);
+    uncover(uncovered, numdistb, mine, col + 1, row - 1);
+    uncover(uncovered, numdistb, mine, col - 1, row);
+    uncover(uncovered, numdistb, mine, col + 1, row);
+    uncover(uncovered, numdistb, mine, col - 1, row + 1);
+    uncover(uncovered, numdistb, mine, col, row + 1);
+    uncover(uncovered, numdistb, mine, col + 1, row + 1);
+}
 
 /*
  Status
@@ -11,6 +35,7 @@ using namespace std;
  number -1  : 未翻开
  number 9   : 插上了棋子
  number 10  : 插上了问号
+ number 11  : 现在的光标位置
  */
 
 // paintStatus
@@ -51,6 +76,10 @@ void paintStatus(int status)
             cout << "?";
             break;
         }
+        case 11:
+        {
+            cout << "@";
+        }
     }
 }
 
@@ -85,7 +114,7 @@ void paint(int (*status)[52], int col, int row)
     cout << "│";
     for (int j = 1; j <= col; j++)
     {
-        paintStatus(status[row - 1][j]);
+        paintStatus(status[row][j]);
         cout << "│";
     }
     cout << endl << "└";
@@ -108,9 +137,26 @@ int main()
     int marked[52][52] = {0};     // 已标记为问号的部分
     int numdistb[52][52] = {0};   // 每个格子周边的地雷数计算
     
+    
     int row, col, num;
     cin >> row >> col >> num;
-    int nummine = num;            // 未翻开的地雷数
+    int nummine = num;            // 总地雷数
+    
+    // 初始化uncovered数组，把边框框起来
+    for (int i = 0; i <= row + 1; i++)
+    {
+        for (int j = 0; j <= col + 1; j++)
+        {
+            uncovered[i][j] = 1;
+        }
+    }
+    for (int i = 1; i <= row; i++)
+    {
+        for (int j = 1; j <= col; j++)
+        {
+            uncovered[i][j] = 0;
+        }
+    }
     
     // 输入的地雷数不应该大于棋盘大小的一半
     while (num > row * col / 2)
@@ -202,15 +248,161 @@ int main()
         }
     }
     
-    // 下面的内容仍在处理调试中。
-    int status[52][52] = {0}; // Status是经过计算的结果。也就是说，需要根据布雷计算出附近的地雷数，存在status中
-    for (int i = 1; i <= row; i++)
+    // 下面的内容仍然在调试中
+    
+    int status[52][52] = {0}; // status是棋盘的现状
+    int cursor_a = 1, cursor_b = 1; // cursor的位置, a是行数，b是列数
+    
+    // 用于控制输出不需要回车
+    struct termios stored_settings;
+    struct termios new_settings;
+    tcgetattr (0, &stored_settings);
+    new_settings = stored_settings;
+    new_settings.c_lflag &= (~ICANON);
+    new_settings.c_cc[VTIME] = 0;
+    new_settings.c_cc[VMIN] = 1;
+    tcsetattr (0, TCSANOW, &new_settings);
+    
+    bool lose = false; // 失败标记
+    int currentLeft = 1; // 未标记的地雷数
+    int usedflag = 0;
+    
+    while (currentLeft > 0)
     {
-        for (int j = 1; j <= col; j++)
+        // 这部分先生成棋盘的现状
+        system("clear");
+        for (int i = 1; i <= row; i++)
         {
-            status[i][j] = numdistb[i][j];
+            for (int j = 1; j <= col; j++)
+            {
+                status[i][j] = numdistb[i][j];
+            }
         }
+        for (int i = 1; i <= row; i++)
+        {
+            for (int j = 1; j <= col; j++)
+            {
+                if (!uncovered[i][j])
+                {
+                    status[i][j] = -1;
+                }
+            }
+        }
+        for (int i = 1; i <= row; i++)
+        {
+            for (int j = 1; j <= col; j++)
+            {
+                if (flagged[i][j])
+                {
+                    status[i][j] = 9;
+                }
+                else if (marked[i][j])
+                {
+                    status[i][j] = 10;
+                }
+            }
+        }
+        status[cursor_a][cursor_b] = 11;
+        // 棋盘状态生成完毕
+
+        paint(status, row, col);
+        // 输出地雷数
+        cout << "Total: " << nummine << ", Left: " << nummine - usedflag << endl;
+        // 棋盘状态输出完毕
+        
+        // 下面是操纵光标
+        // ASDW控制方向
+        // F控制插旗
+        // V表示问号
+        int comm;
+
+        comm = getchar();
+
+        if (comm == 119)         // Up
+        {
+            if (cursor_a > 1)
+            {
+                cursor_a--;
+            }
+        }
+        if (comm == 97)         // Left
+        {
+            if (cursor_b > 1)
+            {
+                cursor_b--;
+            }
+        }
+        if (comm == 100)         // Right
+        {
+            if (cursor_b < col)
+            {
+                cursor_b++;
+            }
+        }
+        if (comm == 115)         // Down
+        {
+            if (cursor_a < row)
+            {
+                cursor_a++;
+            }
+        }
+        if (comm == 102)
+        {
+            if (used < nummine) // 标记的地雷数不能多于总地雷数
+            {
+                flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
+                if (flagged[cursor_a][cursor_b])
+                {
+                    used++;
+                }
+                else
+                {
+                    used--;
+                }
+            }
+        }
+        if (comm == 118)
+        {
+            marked[cursor_a][cursor_b] = !marked[cursor_a][cursor_b];
+        }
+        if (comm == 99)
+        {
+            if (mine[cursor_a][cursor_b]) // 踩到地雷
+            {
+                lose = true;
+                break;
+            }
+            else
+            {
+                uncover(uncovered, numdistb, mine, cursor_b, cursor_a);
+            }
+        }
+        
+        // 下面计算剩下的未标记的地雷数
+        int correctcount = 0;
+        for (int i = 1; i <= row; i++)
+        {
+            for (int j = 1; j <= col; j++)
+            {
+                if (flagged[i][j] == 1 && mine[i][j] == 1)
+                {
+                    correctcount++;
+                }
+            }
+        }
+        currentLeft = nummine - correctcount;
     }
-    paint(status, row, col);
+    
+    // 结束控制输出不需要回车
+    tcsetattr (0, TCSANOW, &stored_settings);
+    if (lose)
+    {
+        cout << "LOSE!" << endl;
+    }
+    else
+    {
+        cout << "WIN!" << endl;
+    }
+    
     return 0;
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C59D6EDF1A178F8F00871147 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C59D6EDE1A178F8F00871147 /* main.cpp */; };
+		C59D6EE81A17C52300871147 /* libncurses.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C59D6EE71A17C52300871147 /* libncurses.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		C59D6EDB1A178F8F00871147 /* mine-sweeper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mine-sweeper"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C59D6EDE1A178F8F00871147 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C59D6EE71A17C52300871147 /* libncurses.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libncurses.dylib; path = usr/lib/libncurses.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C59D6EE81A17C52300871147 /* libncurses.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +44,7 @@
 		C59D6ED21A178F8F00871147 = {
 			isa = PBXGroup;
 			children = (
+				C59D6EE71A17C52300871147 /* libncurses.dylib */,
 				C59D6EDD1A178F8F00871147 /* mine-sweeper */,
 				C59D6EDC1A178F8F00871147 /* Products */,
 			);
@@ -232,6 +236,7 @@
 				C59D6EE41A178F8F00871147 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
