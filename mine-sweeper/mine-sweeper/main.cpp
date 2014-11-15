@@ -102,9 +102,15 @@ int main()
     srand((unsigned)(time(NULL))); // 随机数seeding
     
     // initialization
-    int mine[52][52] = {0};
+    int mine[52][52] = {0};       // 地雷位置
+    int uncovered[52][52] = {0};  // 已翻开的部分
+    int flagged[52][52] = {0};    // 已标记为地雷的部分
+    int marked[52][52] = {0};     // 已标记为问号的部分
+    int numdistb[52][52] = {0};   // 每个格子周边的地雷数计算
+    
     int row, col, num;
     cin >> row >> col >> num;
+    int nummine = num;            // 未翻开的地雷数
     
     // 输入的地雷数不应该大于棋盘大小的一半
     while (num > row * col / 2)
@@ -113,7 +119,7 @@ int main()
         cout << "Retype number of mines:" << endl;
         cin >> num;
     }
-    
+    cin.get();
     // 下面随机生成棋盘
     int a = 1, b = 1; // 遍历棋盘。a、b用于记录现在遍历到的位置。
     while (num > 0)
@@ -155,13 +161,54 @@ int main()
         }
     }
     
-    // 下面的内容仍在处理调试中。
-    int status[52][52] = {0}; //Status是经过计算的结果。也就是说，需要根据布雷计算出附近的地雷数，存在status中
+    // 下面的部分遍历某个格子周边的八个格子，来计算这个格子周围的地雷数
+    // 这里计算之后，numdistb就不用再动了，可以直接将来调用
     for (int i = 1; i <= row; i++)
     {
         for (int j = 1; j <= col; j++)
         {
-            status[i][j] = mine[i][j];
+            if (mine[i - 1][j - 1])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i - 1][j])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i - 1][j + 1])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i][j - 1])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i][j + 1])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i + 1][j - 1])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i + 1][j])
+            {
+                numdistb[i][j]++;
+            }
+            if (mine[i + 1][j + 1])
+            {
+                numdistb[i][j]++;
+            }
+        }
+    }
+    
+    // 下面的内容仍在处理调试中。
+    int status[52][52] = {0}; // Status是经过计算的结果。也就是说，需要根据布雷计算出附近的地雷数，存在status中
+    for (int i = 1; i <= row; i++)
+    {
+        for (int j = 1; j <= col; j++)
+        {
+            status[i][j] = numdistb[i][j];
         }
     }
     paint(status, row, col);
