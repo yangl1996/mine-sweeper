@@ -106,8 +106,8 @@ int main()
     }
     int a = 1, b = 1;
     while (num > 0)
-    {
-        if (random() % (row * col) <= num)
+    {        
+        if ((rand() % (row * col)) <= num)
         {
             if (mine[a][b] != 1)
             {
