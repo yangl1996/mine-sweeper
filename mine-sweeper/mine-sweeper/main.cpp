@@ -7,11 +7,20 @@
 
 using namespace std;
 
-// 用于翻开棋盘。需要调试。
+int uncovered[52][52] = {0};  // 已翻开的部分，需要在多个函数中使用，存为全局变量
+
+// 用于翻开棋盘
 void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col, int row)
 {
-    if (!uncovered[row][col] || (numdistb[row][col] != 0) || (mine[row][col] == 1))
+    bool near = false;
+    if ((uncovered[row][col] == 1) || (numdistb[row][col] != 0) || (mine[row][col] == 1))
     {
+        // 下面这段判断这是不是边界：如果是边界那还可以继续输出。
+        near = (uncovered[row - 1][col - 1] == 1) || (uncovered[row][col - 1] == 1) || (uncovered[row + 1][col - 1] == 1) || (uncovered[row - 1][col] == 1) || (uncovered[row + 1][col] == 1) || (uncovered[row - 1][col + 1] == 1) || (uncovered[row][col + 1] == 1) || (uncovered[row + 1][col + 1] == 1);
+        if (near && (numdistb[row][col] != 0))
+        {
+            uncovered[row][col] = 1;
+        }
         return;
     }
     else
@@ -83,6 +92,49 @@ void paintStatus(int status)
     }
 }
 
+// Debugging用
+void dbpaint(int (*status)[52], int col, int row)
+{
+    cout << "┌";
+    for (int i = 2; i <= col; i++)
+    {
+        cout << "─" << "┬";
+    }
+    cout << "─";
+    cout << "┐";
+    cout << endl;
+    for (int i = 1; i <= row - 1; i++)
+    {
+        cout << "│";
+        for (int j = 1; j <= col; j++)
+        {
+            cout << status[i][j];
+            cout << "│";
+        }
+        cout << endl << "├";
+        for (int j = 2; j <= col; j++)
+        {
+            cout << "─" << "┼";
+        }
+        cout << "─";
+        cout << "┤" << endl;
+    }
+    cout << "│";
+    for (int j = 1; j <= col; j++)
+    {
+        cout << status[row][j];
+        cout << "│";
+    }
+    cout << endl << "└";
+    for (int j = 2; j <= col; j++)
+    {
+        cout << "─" << "┴";
+    }
+    cout << "─" << "┘" << endl;
+}
+
+
+
 // 该函数用于打印棋盘。数据来自status数组，里面记录了周边的雷数、是否标记了棋子等等。
 // 棋盘的最大大小是50。
 void paint(int (*status)[52], int col, int row)
@@ -132,7 +184,6 @@ int main()
     
     // initialization
     int mine[52][52] = {0};       // 地雷位置
-    int uncovered[52][52] = {0};  // 已翻开的部分
     int flagged[52][52] = {0};    // 已标记为地雷的部分
     int marked[52][52] = {0};     // 已标记为问号的部分
     int numdistb[52][52] = {0};   // 每个格子周边的地雷数计算
