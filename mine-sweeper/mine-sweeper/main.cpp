@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+#include <cstdlib>
 
 using namespace std;
 
@@ -50,26 +52,26 @@ void paintStatus(int status)
 }
 
 // the size is 50 * 50
-void paint(int (*status)[50], int col, int row)
+void paint(int (*status)[52], int col, int row)
 {
     cout << "┌";
-    for (int i = 1; i < col; i++)
+    for (int i = 2; i <= col; i++)
     {
         cout << "─" << "┬";
     }
     cout << "─";
     cout << "┐";
     cout << endl;
-    for (int i = 0; i < row - 1; i++)
+    for (int i = 1; i <= row - 1; i++)
     {
         cout << "│";
-        for (int j = 0; j < col; j++)
+        for (int j = 1; j <= col; j++)
         {
             paintStatus(status[i][j]);
             cout << "│";
         }
         cout << endl << "├";
-        for (int j = 1; j < col; j++)
+        for (int j = 2; j <= col; j++)
         {
             cout << "─" << "┼";
         }
@@ -77,13 +79,13 @@ void paint(int (*status)[50], int col, int row)
         cout << "┤" << endl;
     }
     cout << "│";
-    for (int j = 0; j < col; j++)
+    for (int j = 1; j <= col; j++)
     {
         paintStatus(status[row - 1][j]);
         cout << "│";
     }
     cout << endl << "└";
-    for (int j = 1; j < col; j++)
+    for (int j = 2; j <= col; j++)
     {
         cout << "─" << "┴";
     }
@@ -92,11 +94,60 @@ void paint(int (*status)[50], int col, int row)
 
 int main()
 {
-    int status[50][50] = {0}; //Status是经过计算的结果。也就是说，需要根据布雷计算出附近的地雷数，存在status中
-    status[0][0] = -1;
-    status[0][1] = 2;
-    status[0][3] = 10;
-    status[0][4] = 9;
-    paint(status, 15, 15);
+    srand((unsigned)(time(NULL)));
+    int mine[52][52] = {0};
+    int row, col, num;
+    cin >> row >> col >> num;
+    while (num > row * col / 2)
+    {
+        cout << "Too many mines! Try smaller number." << endl;
+        cout << "Retype number of mines:" << endl;
+        cin >> num;
+    }
+    int a = 1, b = 1;
+    while (num > 0)
+    {
+        if (random() % (row * col) <= num)
+        {
+            if (mine[a][b] != 1)
+            {
+                mine[a][b] = 1;
+                num--;
+            }
+        }
+        if (a != row)
+        {
+            if (b != col)
+            {
+                b++;
+            }
+            else
+            {
+                b = 1;
+                a++;
+            }
+        }
+        else
+        {
+            if (b != col)
+            {
+                b++;
+            }
+            else
+            {
+                a = 1;
+                b = 1;
+            }
+        }
+    }
+    int status[52][52] = {0}; //Status是经过计算的结果。也就是说，需要根据布雷计算出附近的地雷数，存在status中
+    for (int i = 1; i <= row; i++)
+    {
+        for (int j = 1; j <= col; j++)
+        {
+            status[i][j] = mine[i][j];
+        }
+    }
+    paint(status, row, col);
     return 0;
 }
