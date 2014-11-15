@@ -346,26 +346,27 @@ int main()
                 cursor_a++;
             }
         }
-        if (comm == 102)
+        if (comm == 102)         // Flagging
         {
-            if (used < nummine) // 标记的地雷数不能多于总地雷数
+            if (flagged[cursor_a][cursor_b])
             {
+                usedflag--;
                 flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
-                if (flagged[cursor_a][cursor_b])
+            }
+            else
+            {
+                if (usedflag < nummine) // 标记的地雷数不能超过总的地雷数
                 {
-                    used++;
-                }
-                else
-                {
-                    used--;
+                    usedflag++;
+                    flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
                 }
             }
         }
-        if (comm == 118)
+        if (comm == 118)         // Marking
         {
             marked[cursor_a][cursor_b] = !marked[cursor_a][cursor_b];
         }
-        if (comm == 99)
+        if (comm == 99)          // Uncovering
         {
             if (mine[cursor_a][cursor_b]) // 踩到地雷
             {
