@@ -8,33 +8,60 @@
 using namespace std;
 
 int uncovered[52][52] = {0};  // 已翻开的部分，需要在多个函数中使用，存为全局变量
+bool firstuncover = true; // 递归时用于记录这是不是第一次翻开
 
 // 用于翻开棋盘
-void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col, int row)
+void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col, int row, bool first)
 {
     bool near = false;
     if ((uncovered[row][col] == 1) || (numdistb[row][col] != 0) || (mine[row][col] == 1))
     {
         // 下面这段判断这是不是边界：如果是边界那还可以继续输出。
-        near = (uncovered[row - 1][col - 1] == 1) || (uncovered[row][col - 1] == 1) || (uncovered[row + 1][col - 1] == 1) || (uncovered[row - 1][col] == 1) || (uncovered[row + 1][col] == 1) || (uncovered[row - 1][col + 1] == 1) || (uncovered[row][col + 1] == 1) || (uncovered[row + 1][col + 1] == 1);
-        if (near && (numdistb[row][col] != 0))
+        near = ((uncovered[row][col - 1] == 1) || (uncovered[row - 1][col] == 1) || (uncovered[row + 1][col] == 1) || (uncovered[row][col + 1] == 1));
+        if (near && (numdistb[row][col] != 0) && (mine[row][col] == 0))
         {
             uncovered[row][col] = 1;
+            // 继续遍历，但不能走回头路
+            /* 需要调试
+            if (uncovered[row][col - 1] == 0)
+            {
+                uncover(uncovered, numdistb, mine, col - 1, row, first);
+            }
+            if (uncovered[row][col + 1] == 0)
+            {
+                uncover(uncovered, numdistb, mine, col + 1, row, first);
+            }
+            if (uncovered[row - 1][col] == 0)
+            {
+                uncover(uncovered, numdistb, mine, col, row - 1, first);
+            }
+            if (uncovered[row + 1][col] == 0)
+            {
+                uncover(uncovered, numdistb, mine, col, row + 1, first);
+            }
+             */
         }
+        /*
+        if (first) // 如果是第一块翻开的
+        {
+            uncovered[row][col] = 1;
+            first = false;
+            uncover(uncovered, numdistb, mine, col, row - 1, first);
+            uncover(uncovered, numdistb, mine, col - 1, row, first);
+            uncover(uncovered, numdistb, mine, col + 1, row, first);
+            uncover(uncovered, numdistb, mine, col, row + 1, first);
+        }
+         */
         return;
     }
     else
     {
         uncovered[row][col] = 1;
     }
-    uncover(uncovered, numdistb, mine, col - 1, row - 1);
-    uncover(uncovered, numdistb, mine, col, row - 1);
-    uncover(uncovered, numdistb, mine, col + 1, row - 1);
-    uncover(uncovered, numdistb, mine, col - 1, row);
-    uncover(uncovered, numdistb, mine, col + 1, row);
-    uncover(uncovered, numdistb, mine, col - 1, row + 1);
-    uncover(uncovered, numdistb, mine, col, row + 1);
-    uncover(uncovered, numdistb, mine, col + 1, row + 1);
+    uncover(uncovered, numdistb, mine, col, row - 1, first);
+    uncover(uncovered, numdistb, mine, col - 1, row, first);
+    uncover(uncovered, numdistb, mine, col + 1, row, first);
+    uncover(uncovered, numdistb, mine, col, row + 1, first);
 }
 
 /*
@@ -426,7 +453,11 @@ int main()
             }
             else
             {
-                uncover(uncovered, numdistb, mine, cursor_b, cursor_a);
+                if (uncovered[cursor_a][cursor_b] == 0)
+                {
+                    firstuncover = true;
+                    uncover(uncovered, numdistb, mine, cursor_b, cursor_a, firstuncover);
+                }
             }
         }
         
@@ -447,13 +478,14 @@ int main()
     
     // 结束控制输出不需要回车
     tcsetattr (0, TCSANOW, &stored_settings);
+    system("clear");
     if (lose)
     {
-        cout << "LOSE!" << endl;
+        cout << endl << "LOSE!" << endl;
     }
     else
     {
-        cout << "WIN!" << endl;
+        cout << endl << "WIN!" << endl;
     }
     
     return 0;
