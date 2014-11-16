@@ -378,35 +378,43 @@ int main()
         
         switch (comm)
         {
-            case 119:                // UP
+            case 91:             // Cursor
             {
-                if (cursor_a > 1)
+                comm = getchar();
+                switch (comm)
                 {
-                    cursor_a--;
-                }
-                break;
-            }
-            case 97:                 // LEFT
-            {
-                if (cursor_b > 1)
-                {
-                    cursor_b--;
-                }
-                break;
-            }
-            case 100:                // RIGHT
-            {
-                if (cursor_b < col)
-                {
-                    cursor_b++;
-                }
-                break;
-            }
-            case 115:                // DOWN
-            {
-                if (cursor_a < row)
-                {
-                    cursor_a++;
+                    case 65: // UP
+                    {
+                        if (cursor_a > 1)
+                        {
+                            cursor_a--;
+                        }
+                        break;
+                    }
+                    case 68: // LEFT
+                    {
+                        if (cursor_b > 1)
+                        {
+                            cursor_b--;
+                        }
+                        break;
+                    }
+                    case 67: // RIGHT
+                    {
+                        if (cursor_b < col)
+                        {
+                            cursor_b++;
+                        }
+                        break;
+                    }
+                    case 66: // DOWN
+                    {
+                        if (cursor_a < row)
+                        {
+                            cursor_a++;
+                        }
+                        break;
+                    }
                 }
                 break;
             }
