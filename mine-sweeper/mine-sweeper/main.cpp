@@ -14,44 +14,20 @@ bool firstuncover = true; // 递归时用于记录这是不是第一次翻开
 void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col, int row, bool first)
 {
     bool near = false;
+    // 如果这是第一次翻开，那么一定翻开
+    if ((uncovered[row][col] == 0) && (numdistb[row][col] != 0) && (mine[row][col] == 0) && first)
+    {
+        uncovered[row][col] = 1;
+    }
+    first = false;
     if ((uncovered[row][col] == 1) || (numdistb[row][col] != 0) || (mine[row][col] == 1))
     {
-        // 下面这段判断这是不是边界：如果是边界那还可以继续输出。
-        near = ((uncovered[row][col - 1] == 1) || (uncovered[row - 1][col] == 1) || (uncovered[row + 1][col] == 1) || (uncovered[row][col + 1] == 1));
+        // 下面这段判断这是不是边界：如果是边界那还可以继续输出。如果周边有翻开的空格，且不是带数字的，那就可以翻。
+        near = (((uncovered[row][col - 1] == 1) && (numdistb[row][col - 1] == 0)) || ((uncovered[row - 1][col] == 1) && (numdistb[row - 1][col] == 0)) || ((uncovered[row + 1][col] == 1) && (numdistb[row + 1][col] == 0)) || ((uncovered[row][col + 1] == 1) && (numdistb[row][col + 1] == 0)) || ((uncovered[row - 1][col - 1] == 1) && (numdistb[row - 1][col - 1] == 0)) || ((uncovered[row + 1][col - 1] == 1) && (numdistb[row + 1][col - 1] == 0)) || ((uncovered[row - 1][col + 1] == 1) && (numdistb[row - 1][col + 1] == 0)) || ((uncovered[row + 1][col + 1] == 1) && (numdistb[row + 1][col + 1] == 0)));
         if (near && (numdistb[row][col] != 0) && (mine[row][col] == 0))
         {
             uncovered[row][col] = 1;
-            // 继续遍历，但不能走回头路
-            /* 需要调试
-            if (uncovered[row][col - 1] == 0)
-            {
-                uncover(uncovered, numdistb, mine, col - 1, row, first);
-            }
-            if (uncovered[row][col + 1] == 0)
-            {
-                uncover(uncovered, numdistb, mine, col + 1, row, first);
-            }
-            if (uncovered[row - 1][col] == 0)
-            {
-                uncover(uncovered, numdistb, mine, col, row - 1, first);
-            }
-            if (uncovered[row + 1][col] == 0)
-            {
-                uncover(uncovered, numdistb, mine, col, row + 1, first);
-            }
-             */
         }
-        /*
-        if (first) // 如果是第一块翻开的
-        {
-            uncovered[row][col] = 1;
-            first = false;
-            uncover(uncovered, numdistb, mine, col, row - 1, first);
-            uncover(uncovered, numdistb, mine, col - 1, row, first);
-            uncover(uncovered, numdistb, mine, col + 1, row, first);
-            uncover(uncovered, numdistb, mine, col, row + 1, first);
-        }
-         */
         return;
     }
     else
@@ -62,6 +38,10 @@ void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col
     uncover(uncovered, numdistb, mine, col - 1, row, first);
     uncover(uncovered, numdistb, mine, col + 1, row, first);
     uncover(uncovered, numdistb, mine, col, row + 1, first);
+    uncover(uncovered, numdistb, mine, col + 1, row - 1, first);
+    uncover(uncovered, numdistb, mine, col - 1, row - 1, first);
+    uncover(uncovered, numdistb, mine, col + 1, row + 1, first);
+    uncover(uncovered, numdistb, mine, col - 1, row + 1, first);
 }
 
 /*
@@ -395,56 +375,65 @@ int main()
         int comm;
 
         comm = getchar();
-
-        if (comm == 119)         // Up
+        
+        switch (comm)
         {
-            if (cursor_a > 1)
+            case 119:                // UP
             {
-                cursor_a--;
-            }
-        }
-        if (comm == 97)         // Left
-        {
-            if (cursor_b > 1)
-            {
-                cursor_b--;
-            }
-        }
-        if (comm == 100)         // Right
-        {
-            if (cursor_b < col)
-            {
-                cursor_b++;
-            }
-        }
-        if (comm == 115)         // Down
-        {
-            if (cursor_a < row)
-            {
-                cursor_a++;
-            }
-        }
-        if (comm == 102)         // Flagging
-        {
-            if (flagged[cursor_a][cursor_b])
-            {
-                usedflag--;
-                flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
-            }
-            else
-            {
-                if (usedflag < nummine) // 标记的地雷数不能超过总的地雷数
+                if (cursor_a > 1)
                 {
-                    usedflag++;
+                    cursor_a--;
+                }
+                break;
+            }
+            case 97:                 // LEFT
+            {
+                if (cursor_b > 1)
+                {
+                    cursor_b--;
+                }
+                break;
+            }
+            case 100:                // RIGHT
+            {
+                if (cursor_b < col)
+                {
+                    cursor_b++;
+                }
+                break;
+            }
+            case 115:                // DOWN
+            {
+                if (cursor_a < row)
+                {
+                    cursor_a++;
+                }
+                break;
+            }
+            case 102:                // Flagging
+            {
+                if (flagged[cursor_a][cursor_b])
+                {
+                    usedflag--;
                     flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
                 }
+                else
+                {
+                    if (usedflag < nummine) // 标记的地雷数不能超过总的地雷数
+                    {
+                        usedflag++;
+                        flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
+                    }
+                }
+                break;
+            }
+            case 118:                // Marking
+            {
+                marked[cursor_a][cursor_b] = !marked[cursor_a][cursor_b];
+                break;
             }
         }
-        if (comm == 118)         // Marking
-        {
-            marked[cursor_a][cursor_b] = !marked[cursor_a][cursor_b];
-        }
-        if (comm == 99)          // Uncovering
+        if (comm == 99)                 // Uncovering
         {
             if (mine[cursor_a][cursor_b]) // 踩到地雷
             {
@@ -478,14 +467,27 @@ int main()
     
     // 结束控制输出不需要回车
     tcsetattr (0, TCSANOW, &stored_settings);
+    
+    // 输出游戏结果
     system("clear");
     if (lose)
     {
-        cout << endl << "LOSE!" << endl;
+        for (int i = 1; i <= row; i++)
+        {
+            for (int j = 1; j <= col; j++)
+            {
+                if (mine[i][j])
+                {
+                    status[i][j] = 9;
+                }
+            }
+        }
+        paint(status, col, row);
+        cout << endl << "GAME OVER!" << endl;
     }
     else
     {
-        cout << endl << "WIN!" << endl;
+        cout << endl << " YOU WIN!" << endl;
     }
     
     return 0;
