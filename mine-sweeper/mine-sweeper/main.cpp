@@ -54,22 +54,46 @@ void setHard()
     cout << "Set the size of the checkerboard" << endl;
     cout << "Row: ";
     cin >> g_row;
+    while (g_row <= 3)
+    {
+        system("clear");
+        cout << "Too small checkerboard!" << endl;
+        cout << "Retype the row size: " << endl;
+        cin >> g_row;
+    }
     system("clear");
     cout << "Set the size of the checkerboard" << endl;
     cout << "Col: ";
     cin >> g_col;
+    while (g_row <= 3)
+    {
+        system("clear");
+        cout << "Too small checkerboard!" << endl;
+        cout << "Retype the column size: " << endl;
+        cin >> g_row;
+    }
     system("clear");
     cout << "Set the quantity of mines" << endl;
     cout << "Quantity of mines: ";
     cin >> g_mine;
     
     // 输入的地雷数不应该大于棋盘大小的一半
-    while (g_mine > g_col * g_row / 2)
+    while ((g_mine > g_col * g_row / 2) || (g_mine <= 0))
     {
-        system("clear");
-        cout << "Too many mines! Try a smaller number." << endl;
-        cout << "Retype the quantity of mines: " << endl;
-        cin >> g_mine;
+        if (g_mine <= 0)
+        {
+            system("clear");
+            cout << "The quantity can't be zero!" << endl;
+            cout << "Retype the quantity of mines: " << endl;
+            cin >> g_mine;
+        }
+        else if (g_mine > g_col * g_row / 2)
+        {
+            system("clear");
+            cout << "Too many mines! Try a smaller number." << endl;
+            cout << "Retype the quantity of mines: " << endl;
+            cin >> g_mine;
+        }
     }
     
     system("clear");
