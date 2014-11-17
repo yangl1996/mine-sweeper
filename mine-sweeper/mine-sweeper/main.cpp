@@ -393,6 +393,8 @@ int game()
     int currentLeft = 1; // 未标记的地雷数
     int usedflag = 0;
     
+    long startTime = time(NULL); // 记下开始时的时间
+    
     while (currentLeft > 0)
     {
         // 这部分先生成棋盘的现状
@@ -580,7 +582,33 @@ int game()
     }
     else
     {
-        cout << endl << " YOU WIN!" << endl;
+        // 计算所用的时间
+        long endTime = time(NULL);
+        long usedTime = endTime - startTime;
+        long usedHour = usedTime / 3600;
+        long usedMin = (usedTime % 3600) / 60;
+        long usedSec = usedTime - 3600 * usedHour - 60 * usedMin;
+        
+        // 输出游戏胜利
+        cout << endl << "YOU WIN!" << endl;
+        
+        // 输出所用的时间
+        cout << "Used time: ";
+        if (usedHour == 0)
+        {
+            if (usedMin == 0)
+            {
+                cout << usedSec << " seconds" << endl << endl;
+            }
+            else
+            {
+                cout << usedMin << ":" << usedSec << endl << endl;
+            }
+        }
+        else
+        {
+            cout << usedHour << ":" << usedMin << ":" << usedSec << endl << endl;
+        }
     }
     cout << "...Press any key to return..." << endl;
     getchar();
