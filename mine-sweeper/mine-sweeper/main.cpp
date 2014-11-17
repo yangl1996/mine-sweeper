@@ -7,8 +7,97 @@
 
 using namespace std;
 
-int uncovered[52][52] = {0};  // 已翻开的部分，需要在多个函数中使用，存为全局变量
+// 全局变量
+int uncovered[52][52] = {0};  // 已翻开的部分（需要在递归中进行操作）
 bool firstuncover = true; // 递归时用于记录这是不是第一次翻开
+int g_row = 10, g_col = 10, g_mine = 10;
+
+// 用于显示帮助
+void dispHelp()
+{
+    system("clear");
+    cout << "             MINE SWEEPER" << endl;
+    cout << "Welcome to Mine Sweeper! These are the" << endl;
+    cout << "commands you will use durning the play." << endl << endl;
+    cout << "Up key - Move the cursor up" << endl;
+    cout << "Down key   - Move the cursor down" << endl;
+    cout << "Left key   - Move the cursor left" << endl;
+    cout << "Right key  - Move the cursor right" << endl;
+    cout << "F          - Flag the current cell" << endl;
+    cout << "V          - Questionmark the current cell" << endl;
+    cout << "C          - Uncover the cell" << endl;
+    cout << "Q          - Quit the current game" << endl << endl;
+    cout << "    ...Press any key to return...";
+    
+    // 用于控制输出不需要回车
+    struct termios stored_settings;
+    struct termios new_settings;
+    tcgetattr (0, &stored_settings);
+    new_settings = stored_settings;
+    new_settings.c_lflag &= (~ICANON);
+    new_settings.c_cc[VTIME] = 0;
+    new_settings.c_cc[VMIN] = 1;
+    tcsetattr (0, TCSANOW, &new_settings);
+    
+    getchar();
+    
+    // 结束控制输出不需要回车
+    tcsetattr (0, TCSANOW, &stored_settings);
+    
+    return;
+}
+
+// 用于设置难度
+void setHard()
+{
+    system("clear");
+    cout << "Set the size of the checkerboard" << endl;
+    cout << "Row: ";
+    cin >> g_row;
+    system("clear");
+    cout << "Set the size of the checkerboard" << endl;
+    cout << "Col: ";
+    cin >> g_col;
+    system("clear");
+    cout << "Set the quantity of mines" << endl;
+    cout << "Quantity of mines: ";
+    cin >> g_mine;
+    
+    // 输入的地雷数不应该大于棋盘大小的一半
+    while (g_mine > g_col * g_row / 2)
+    {
+        system("clear");
+        cout << "Too many mines! Try a smaller number." << endl;
+        cout << "Retype the quantity of mines: " << endl;
+        cin >> g_mine;
+    }
+    
+    system("clear");
+    cout << "Hardness set!" << endl;
+    cout << "Checkerboard size: " << g_row << "*" << g_col << endl;
+    cout << "Quantity of mines: " << g_mine << endl << endl;
+    cout << "...Press any key to return..." << endl;
+    
+    // 用于控制输出不需要回车
+    struct termios stored_settings;
+    struct termios new_settings;
+    tcgetattr (0, &stored_settings);
+    new_settings = stored_settings;
+    new_settings.c_lflag &= (~ICANON);
+    new_settings.c_cc[VTIME] = 0;
+    new_settings.c_cc[VMIN] = 1;
+    tcsetattr (0, TCSANOW, &new_settings);
+    
+    getchar();
+    getchar();
+    
+    // 结束控制输出不需要回车
+    tcsetattr (0, TCSANOW, &stored_settings);
+    
+    return;
+}
+
+
 
 // 用于翻开棋盘
 void uncover(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int col, int row, bool first)
@@ -99,48 +188,6 @@ void paintStatus(int status)
     }
 }
 
-// Debugging用
-void dbpaint(int (*status)[52], int col, int row)
-{
-    cout << "┌";
-    for (int i = 2; i <= col; i++)
-    {
-        cout << "─" << "┬";
-    }
-    cout << "─";
-    cout << "┐";
-    cout << endl;
-    for (int i = 1; i <= row - 1; i++)
-    {
-        cout << "│";
-        for (int j = 1; j <= col; j++)
-        {
-            cout << status[i][j];
-            cout << "│";
-        }
-        cout << endl << "├";
-        for (int j = 2; j <= col; j++)
-        {
-            cout << "─" << "┼";
-        }
-        cout << "─";
-        cout << "┤" << endl;
-    }
-    cout << "│";
-    for (int j = 1; j <= col; j++)
-    {
-        cout << status[row][j];
-        cout << "│";
-    }
-    cout << endl << "└";
-    for (int j = 2; j <= col; j++)
-    {
-        cout << "─" << "┴";
-    }
-    cout << "─" << "┘" << endl;
-}
-
-
 
 // 该函数用于打印棋盘。数据来自status数组，里面记录了周边的雷数、是否标记了棋子等等。
 // 棋盘的最大大小是50。
@@ -184,8 +231,8 @@ void paint(int (*status)[52], int col, int row)
     cout << "─" << "┘" << endl;
 }
 
-// 主函数
-int main()
+// 游戏主函数
+int game()
 {
     srand((unsigned)(time(NULL))); // 随机数seeding
     
@@ -197,7 +244,13 @@ int main()
     
     
     int row, col, num;
-    cin >> row >> col >> num;
+    
+    // 把全局变量放入函数里
+    row = g_row;
+    col = g_col;
+    num = g_mine;
+
+    
     int nummine = num;            // 总地雷数
     
     // 初始化uncovered数组，把边框框起来
@@ -216,14 +269,6 @@ int main()
         }
     }
     
-    // 输入的地雷数不应该大于棋盘大小的一半
-    while (num > row * col / 2)
-    {
-        cout << "Too many mines! Try smaller number." << endl;
-        cout << "Retype number of mines:" << endl;
-        cin >> num;
-    }
-    cin.get();
     // 下面随机生成棋盘
     int a = 1, b = 1; // 遍历棋盘。a、b用于记录现在遍历到的位置。
     while (num > 0)
@@ -306,7 +351,6 @@ int main()
         }
     }
     
-    // 下面的内容仍然在调试中
     
     int status[52][52] = {0}; // status是棋盘的现状
     int cursor_a = 1, cursor_b = 1; // cursor的位置, a是行数，b是列数
@@ -376,6 +420,28 @@ int main()
 
         comm = getchar();
         
+<<<<<<< HEAD
+=======
+        // 用于确认是否需要退出游戏
+        if (comm == 113)
+        {
+            system("clear");
+            cout << "Are you sure to quit? (Y / N)" << endl;
+            int choose = 0;
+            while (choose != 121 && choose != 110)
+            {
+                choose = getchar();
+                if (choose == 121)
+                {
+                    return 0;
+                }
+                else if (choose == 110)
+                {
+                    break;
+                }
+            }
+        }
+>>>>>>> menu
         
         switch (comm)
         {
@@ -474,9 +540,6 @@ int main()
         currentLeft = nummine - correctcount;
     }
     
-    // 结束控制输出不需要回车
-    tcsetattr (0, TCSANOW, &stored_settings);
-    
     // 输出游戏结果
     system("clear");
     if (lose)
@@ -498,6 +561,72 @@ int main()
     {
         cout << endl << " YOU WIN!" << endl;
     }
+    cout << "...Press any key to return..." << endl;
+    getchar();
     
+    // 结束控制输出不需要回车
+    tcsetattr (0, TCSANOW, &stored_settings);
+    return 0;
+}
+
+
+// 主菜单
+int main()
+{
+    while (1)
+    {
+        // 显示菜单
+        system("clear");
+        cout << "MINE SWEEPING" << endl << endl;
+        cout << "    MENU" << endl;
+        cout << "1 - NEW GAME" << endl;
+        cout << "2 - SET HARDNESS" << endl;
+        cout << "3 - HELP" << endl;
+        cout << "4 - EXIT" << endl;
+    
+        // 用于控制输出不需要回车
+        struct termios stored_settings;
+        struct termios new_settings;
+        tcgetattr (0, &stored_settings);
+        new_settings = stored_settings;
+        new_settings.c_lflag &= (~ICANON);
+        new_settings.c_cc[VTIME] = 0;
+        new_settings.c_cc[VMIN] = 1;
+        tcsetattr (0, TCSANOW, &new_settings);
+    
+        // 进行菜单操作
+        int sel = 0;
+        sel = getchar();
+        switch (sel)
+        {
+            case 49:
+            {
+                system("clear");
+                game();
+                break;
+            }
+            case 50:
+            {
+                system("clear");
+                setHard();
+                break;
+            }
+            case 51:
+            {
+                system("clear");
+                dispHelp();
+                break;
+            }
+            case 52:
+            {
+                system("clear");
+                return 0;
+            }
+            
+        }
+    
+        // 结束控制输出不需要回车
+        tcsetattr (0, TCSANOW, &stored_settings);
+    }
     return 0;
 }
