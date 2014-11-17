@@ -515,7 +515,7 @@ int game()
                 }
                 else
                 {
-                    if (usedflag < nummine) // 标记的地雷数不能超过总的地雷数
+                    if ((usedflag < nummine) && (!uncovered[cursor_a][cursor_b])) // 标记地雷数不能超过总
                     {
                         usedflag++;
                         flagged[cursor_a][cursor_b] = !flagged[cursor_a][cursor_b];
@@ -576,7 +576,7 @@ int game()
             }
         }
         paint(status, col, row);
-        cout << endl << "GAME OVER!" << endl;
+        cout << "GAME OVER!" << endl;
     }
     else
     {
@@ -629,6 +629,7 @@ int main()
             case 50:
             {
                 system("clear");
+                tcsetattr (0, TCSANOW, &stored_settings);
                 setHard();
                 break;
             }
