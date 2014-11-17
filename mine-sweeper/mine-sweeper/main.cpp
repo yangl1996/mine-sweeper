@@ -376,6 +376,7 @@ int main()
 
         comm = getchar();
         
+        
         switch (comm)
         {
             case 91:             // Cursor
