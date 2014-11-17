@@ -19,7 +19,7 @@ void dispHelp()
     cout << "             MINE SWEEPER" << endl;
     cout << "Welcome to Mine Sweeper! These are the" << endl;
     cout << "commands you will use durning the play." << endl << endl;
-    cout << "Up key - Move the cursor up" << endl;
+    cout << "Up key     - Move the cursor up" << endl;
     cout << "Down key   - Move the cursor down" << endl;
     cout << "Left key   - Move the cursor left" << endl;
     cout << "Right key  - Move the cursor right" << endl;
@@ -65,12 +65,12 @@ void setHard()
     cout << "Set the size of the checkerboard" << endl;
     cout << "Col: ";
     cin >> g_col;
-    while (g_row <= 3)
+    while (g_col <= 3)
     {
         system("clear");
         cout << "Too small checkerboard!" << endl;
         cout << "Retype the column size: " << endl;
-        cin >> g_row;
+        cin >> g_col;
     }
     system("clear");
     cout << "Set the quantity of mines" << endl;
