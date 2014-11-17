@@ -420,8 +420,6 @@ int game()
 
         comm = getchar();
         
-<<<<<<< HEAD
-=======
         // 用于确认是否需要退出游戏
         if (comm == 113)
         {
@@ -441,7 +439,6 @@ int game()
                 }
             }
         }
->>>>>>> menu
         
         switch (comm)
         {
