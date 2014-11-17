@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <termios.h>
 #include <stdio.h>
+#include <fstream>
+#include <cmath>
 
 
 using namespace std;
@@ -26,7 +28,9 @@ void dispHelp()
     cout << "F          - Flag the current cell" << endl;
     cout << "V          - Questionmark the current cell" << endl;
     cout << "C          - Uncover the cell" << endl;
-    cout << "Q          - Quit the current game" << endl << endl;
+    cout << "Q          - Quit the current game" << endl;
+    cout << "S          - Save current game" << endl;
+    cout << "L          - Load game" << endl << endl;
     cout << "    ...Press any key to return...";
     
     // 用于控制输出不需要回车
@@ -45,6 +49,77 @@ void dispHelp()
     tcsetattr (0, TCSANOW, &stored_settings);
     
     return;
+}
+
+// 存盘功能
+int saveGame(int (*uncovered)[52], int (*numdistb)[52], int (*mine)[52], int (*flagged)[52], int (*marked)[52], int nummine, int cur_row, int cur_col, int col, int row, long startTime, int currentleft, int usedflag, long currentTime)
+{
+    // 打开文件
+    ofstream archivefile ("ms-archive.txt");
+    int temp;
+    if (archivefile.is_open()) // 判断是否成功打开文件
+    {
+        archivefile << row << endl << col << endl;
+        
+        for (int i = 0; i <= 51; i++)
+        {
+            for (int j = 0; j <= 51; j++)
+            {
+                temp = uncovered[i][j];
+                archivefile << temp << endl;
+            }
+        }
+        
+        for (int i = 0; i <= 51; i++)
+        {
+            for (int j = 0; j <= 51; j++)
+            {
+                temp = numdistb[i][j];
+                archivefile << temp << endl;
+            }
+        }
+        
+        for (int i = 0; i <= 51; i++)
+        {
+            for (int j = 0; j <= 51; j++)
+            {
+                temp = mine[i][j];
+                archivefile << temp << endl;
+            }
+        }
+        
+        for (int i = 0; i <= 51; i++)
+        {
+            for (int j = 0; j <= 51; j++)
+            {
+                temp = flagged[i][j];
+                archivefile << temp << endl;
+            }
+        }
+        
+        for (int i = 0; i <= 51; i++)
+        {
+            for (int j = 0; j <= 51; j++)
+            {
+                temp = marked[i][j];
+                archivefile << temp << endl;
+            }
+        }
+        
+        archivefile << nummine << endl;
+        archivefile << cur_row << endl << cur_col << endl;
+        archivefile << startTime << endl;
+        archivefile << currentleft << endl << usedflag << endl;
+        archivefile << currentTime << endl;
+        
+        archivefile.close();
+        return 1;
+    }
+    else
+    {
+        archivefile.close();
+        return 0;
+    }
 }
 
 // 用于设置难度
@@ -266,7 +341,6 @@ int game()
     int marked[52][52] = {0};     // 已标记为问号的部分
     int numdistb[52][52] = {0};   // 每个格子周边的地雷数计算
     
-    
     int row, col, num;
     
     // 把全局变量放入函数里
@@ -468,6 +542,90 @@ int game()
         
         switch (comm)
         {
+            case 115:            // Save
+            {
+                cout << endl;
+                if (saveGame(uncovered, numdistb, mine, flagged, marked, nummine, cursor_a, cursor_b, col, row, startTime, currentLeft, usedflag, time(NULL)))
+                {
+                    cout << "Successfully Saved";
+                }
+                else
+                {
+                    cout << "Error Saving!";
+                }
+                getchar();
+                break;
+            }
+            case 108:            // Load
+            {
+                cout << endl;
+                // 打开文件
+                ifstream archivefile ("ms-archive.txt");
+                if (archivefile.is_open()) // 判断是否成功打开文件
+                {
+                    archivefile >> row >> col;
+                    
+                    for (int i = 0; i <= 51; i++)
+                    {
+                        for (int j = 0; j <= 51; j++)
+                        {
+                            archivefile >> uncovered[i][j];
+                        }
+                    }
+                    
+                    for (int i = 0; i <= 51; i++)
+                    {
+                        for (int j = 0; j <= 51; j++)
+                        {
+                            archivefile >> numdistb[i][j];
+                        }
+                    }
+                    
+                    for (int i = 0; i <= 51; i++)
+                    {
+                        for (int j = 0; j <= 51; j++)
+                        {
+                            archivefile >> mine[i][j];
+                        }
+                    }
+                    
+                    for (int i = 0; i <= 51; i++)
+                    {
+                        for (int j = 0; j <= 51; j++)
+                        {
+                            archivefile >> flagged[i][j];
+                        }
+                    }
+                    
+                    for (int i = 0; i <= 51; i++)
+                    {
+                        for (int j = 0; j <= 51; j++)
+                        {
+                            archivefile >> marked[i][j];
+                        }
+                    }
+                    
+                    archivefile >> nummine;
+                    archivefile >> cursor_a >> cursor_b;
+                    archivefile >> startTime;
+                    archivefile >> currentLeft >> usedflag;
+                    long currentTime;
+                    archivefile >> currentTime;
+                    startTime = time(NULL) - abs(currentTime - startTime);
+                    
+                    archivefile.close();
+                    
+                    cout << "Loaded" << endl;
+                }
+                else
+                {
+                    archivefile.close();
+                    cout << "Error loading" << endl;
+                }
+                getchar();
+                break;
+                
+            }
             case 91:             // Cursor
             {
                 comm = getchar();
@@ -628,7 +786,7 @@ int main()
         system("clear");
         cout << "MINE SWEEPING" << endl << endl;
         cout << "    MENU" << endl;
-        cout << "1 - NEW GAME" << endl;
+        cout << "1 - PLAY GAME" << endl;
         cout << "2 - SET HARDNESS" << endl;
         cout << "3 - HELP" << endl;
         cout << "4 - EXIT" << endl;
