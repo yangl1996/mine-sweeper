@@ -30,7 +30,8 @@ void dispHelp()
     cout << "C          - Uncover the cell" << endl;
     cout << "Q          - Quit the current game" << endl;
     cout << "S          - Save current game" << endl;
-    cout << "L          - Load game" << endl << endl;
+    cout << "L          - Load game" << endl;
+    cout << "             Game archive is at your user folder" << endl << endl;
     cout << "    ...Press any key to return...";
     
     // 用于控制输出不需要回车
