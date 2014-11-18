@@ -136,6 +136,13 @@ void setHard()
         cout << "Retype the row size: " << endl;
         cin >> g_row;
     }
+    while (g_row >= 26)
+    {
+        system("clear");
+        cout << "Too big checkerboard!" << endl;
+        cout << "Retype the row size: " << endl;
+        cin >> g_row;
+    }
     system("clear");
     cout << "Set the size of the checkerboard" << endl;
     cout << "Col: ";
@@ -145,6 +152,13 @@ void setHard()
         system("clear");
         cout << "Too small checkerboard!" << endl;
         cout << "Retype the column size: " << endl;
+        cin >> g_col;
+    }
+    while (g_col >= 26)
+    {
+        system("clear");
+        cout << "Too big checkerboard!" << endl;
+        cout << "Retype the col size: " << endl;
         cin >> g_col;
     }
     system("clear");
@@ -282,7 +296,7 @@ void paintStatus(int status)
         }
         case 11:
         {
-            cout << "@";
+            cout << "+";
         }
     }
 }
@@ -295,9 +309,9 @@ void paint(int (*status)[52], int col, int row)
     cout << "┌";
     for (int i = 2; i <= col; i++)
     {
-        cout << "─" << "┬";
+        cout << "───" << "┬";
     }
-    cout << "─";
+    cout << "───";
     cout << "┐";
     cout << endl;
     for (int i = 1; i <= row - 1; i++)
@@ -305,29 +319,33 @@ void paint(int (*status)[52], int col, int row)
         cout << "│";
         for (int j = 1; j <= col; j++)
         {
+            cout << " ";
             paintStatus(status[i][j]);
+            cout << " ";
             cout << "│";
         }
         cout << endl << "├";
         for (int j = 2; j <= col; j++)
         {
-            cout << "─" << "┼";
+            cout << "───" << "┼";
         }
-        cout << "─";
+        cout << "───";
         cout << "┤" << endl;
     }
     cout << "│";
     for (int j = 1; j <= col; j++)
     {
+        cout << " ";
         paintStatus(status[row][j]);
+        cout << " ";
         cout << "│";
     }
     cout << endl << "└";
     for (int j = 2; j <= col; j++)
     {
-        cout << "─" << "┴";
+        cout << "───" << "┴";
     }
-    cout << "─" << "┘" << endl;
+    cout << "───" << "┘" << endl;
 }
 
 // 游戏主函数
@@ -468,6 +486,7 @@ int game()
     int usedflag = 0;
     
     long startTime = time(NULL); // 记下开始时的时间
+    bool justLoaded = false; // 用于显示“Game Loaded”
     
     while (currentLeft > 0)
     {
@@ -510,6 +529,11 @@ int game()
         paint(status, row, col);
         // 输出地雷数
         cout << "Total: " << nummine << ", Left: " << nummine - usedflag << endl;
+        if (justLoaded)
+        {
+            cout << "Game Loaded" << endl;
+            justLoaded = false;
+        }
         // 棋盘状态输出完毕
         
         // 下面是操纵光标
@@ -547,7 +571,7 @@ int game()
                 cout << endl;
                 if (saveGame(uncovered, numdistb, mine, flagged, marked, nummine, cursor_a, cursor_b, col, row, startTime, currentLeft, usedflag, time(NULL)))
                 {
-                    cout << "Successfully Saved";
+                    cout << "Game Saved";
                 }
                 else
                 {
@@ -615,14 +639,14 @@ int game()
                     
                     archivefile.close();
                     
-                    cout << "Loaded" << endl;
+                    justLoaded = true;
                 }
                 else
                 {
                     archivefile.close();
                     cout << "Error loading" << endl;
+                    getchar();
                 }
-                getchar();
                 break;
                 
             }
