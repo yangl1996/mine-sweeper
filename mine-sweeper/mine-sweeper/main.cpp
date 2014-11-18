@@ -18,7 +18,9 @@ int g_row = 10, g_col = 10, g_mine = 10;
 void dispHelp()
 {
     system("clear");
+    printf("%c[1;31m", 27); // Red Bold
     cout << "             MINE SWEEPER" << endl;
+    printf("%c[0;30m", 27); // Black
     cout << "Welcome to Mine Sweeper! These are the" << endl;
     cout << "commands you will use durning the play." << endl << endl;
     cout << "Up key     - Move the cursor up" << endl;
@@ -270,34 +272,56 @@ void paintStatus(int status)
         }
         case 1:
         case 2:
+        {
+            printf("%c[0;34m", 27); // Blue
+            cout << status;
+            printf("%c[0;30m", 27); // Black
+            break;
+        }
         case 3:
         case 4:
+        {
+            printf("%c[0;35m", 27); // Purple
+            cout << status;
+            printf("%c[0;30m", 27); // Black
+            break;
+        }
         case 5:
         case 6:
         case 7:
         case 8:
         {
+            printf("%c[0;31m", 27); // Red
             cout << status;
+            printf("%c[0;30m", 27); // Black
             break;
         }
         case -1:
         {
+            printf("%c[0;33m", 27); // Yellow
             cout << "#";
+            printf("%c[0;30m", 27); // Black
             break;
         }
         case 9:
         {
+            printf("%c[1;30m", 27); // Bold Black
             cout << "X";
+            printf("%c[0;30m", 27); // Black
             break;
         }
         case 10:
         {
+            printf("%c[1;30m", 27); // Bold Black
             cout << "?";
+            printf("%c[0;30m", 27); // Black
             break;
         }
         case 11:
         {
+            printf("%c[1;36m", 27); // Bold Cyan
             cout << "+";
+            printf("%c[0;30m", 27); // Black
         }
     }
 }
@@ -805,16 +829,63 @@ int game()
 // 主菜单
 int main()
 {
+    int currentMenuSelection = 1;
     while (1)
     {
         // 显示菜单
         system("clear");
-        cout << "MINE SWEEPING" << endl << endl;
-        cout << "    MENU" << endl;
-        cout << "1 - PLAY GAME" << endl;
-        cout << "2 - SET HARDNESS" << endl;
-        cout << "3 - HELP" << endl;
-        cout << "4 - EXIT" << endl;
+        printf("%c[0;31m", 27); // Red
+        
+        cout << "┌───────────────┐" << endl;
+        cout << "│ MINE SWEEPING │" << endl;
+        cout << "└───────────────┘" << endl << endl;
+        
+        printf("%c[0;34m", 27); // Blue
+        
+        cout << "      MENU" << endl;
+        
+        printf("%c[0;30m", 27); // Black
+        
+        if (currentMenuSelection == 1)
+        {
+            printf("%c[1;30m", 27); // Black Bold
+            cout << ">> 1 - PLAY GAME" << endl;
+            printf("%c[0;30m", 27); // Black
+        }
+        else
+        {
+            cout << "   1 - PLAY GAME" << endl;
+        }
+        if (currentMenuSelection == 2)
+        {
+            printf("%c[1;30m", 27); // Black Bold
+            cout << ">> 2 - SET HARDNESS" << endl;
+            printf("%c[0;30m", 27); // Black
+        }
+        else
+        {
+            cout << "   2 - SET HARDNESS" << endl;
+        }
+        if (currentMenuSelection == 3)
+        {
+            printf("%c[1;30m", 27); // Black Bold
+            cout << ">> 3 - HELP" << endl;
+            printf("%c[0;30m", 27); // Black
+        }
+        else
+        {
+            cout << "   3 - HELP" << endl;
+        }
+        if (currentMenuSelection == 4)
+        {
+            printf("%c[1;30m", 27); // Black Bold
+            cout << ">> 4 - EXIT" << endl;
+            printf("%c[0;30m", 27); // Black
+        }
+        else
+        {
+            cout << "   4 - EXIT" << endl;
+        }
     
         // 用于控制输出不需要回车
         struct termios stored_settings;
@@ -831,6 +902,69 @@ int main()
         sel = getchar();
         switch (sel)
         {
+            case 10:             // Cursor 确认
+            {
+                switch (currentMenuSelection)
+                {
+                    case 1:
+                    {
+                        system("clear");
+                        game();
+                        break;
+                    }
+                    case 2:
+                    {
+                        system("clear");
+                        tcsetattr (0, TCSANOW, &stored_settings);
+                        setHard();
+                        break;
+                    }
+                    case 3:
+                    {
+                        system("clear");
+                        dispHelp();
+                        break;
+                    }
+                    case 4:
+                    {
+                        system("clear");
+                        return 0;
+                    }
+                }
+                break;
+            }
+            case 91:             // Cursor 操作
+            {
+                sel = getchar();
+                switch (sel)
+                {
+                    case 65: // UP
+                    {
+                        if (currentMenuSelection == 1)
+                        {
+                            currentMenuSelection = 4;
+                        }
+                        else
+                        {
+                            currentMenuSelection--;
+                        }
+                        break;
+                    }
+                    case 66: // DOWN
+                    {
+                        if (currentMenuSelection == 4)
+                        {
+                            currentMenuSelection = 1;
+                        }
+                        else
+                        {
+                            currentMenuSelection++;
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
             case 49:
             {
                 system("clear");
