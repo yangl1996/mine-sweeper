@@ -133,7 +133,18 @@ void setHard()
     printf("%c[1;34m", 27); // Bold Blue
     cout << "Row: ";
     printf("%c[0;30m", 27); // Black
-    cin >> g_row;
+    while (1)
+    {
+        cin >> g_row;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout << "Error" << endl;
+            continue;
+        }
+        break;
+    }
     while (g_row <= 3)
     {
         system("clear");
@@ -141,7 +152,18 @@ void setHard()
         printf("%c[1;34m", 27); // Bold Blue
         cout << "Retype the row size: " << endl;
         printf("%c[0;30m", 27); // Black
-        cin >> g_row;
+        while (1)
+        {
+            cin >> g_row;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                cout << "Error" << endl;
+                continue;
+            }
+            break;
+        }
     }
     while (g_row >= 26)
     {
@@ -150,14 +172,36 @@ void setHard()
         printf("%c[1;34m", 27); // Bold Blue
         cout << "Retype the row size: " << endl;
         printf("%c[0;30m", 27); // Black
-        cin >> g_row;
+        while (1)
+        {
+            cin >> g_row;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                cout << "Error" << endl;
+                continue;
+            }
+            break;
+        }
     }
     system("clear");
     cout << "Set the size of the checkerboard" << endl;
     printf("%c[1;34m", 27); // Bold Blue
     cout << "Col: ";
     printf("%c[0;30m", 27); // Black
-    cin >> g_col;
+    while (1)
+    {
+        cin >> g_col;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout << "Error" << endl;
+            continue;
+        }
+        break;
+    }
     while (g_col <= 3)
     {
         system("clear");
@@ -165,7 +209,18 @@ void setHard()
         printf("%c[1;34m", 27); // Bold Blue
         cout << "Retype the column size: " << endl;
         printf("%c[0;30m", 27); // Black
-        cin >> g_col;
+        while (1)
+        {
+            cin >> g_col;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                cout << "Error" << endl;
+                continue;
+            }
+            break;
+        }
     }
     while (g_col >= 26)
     {
@@ -174,14 +229,36 @@ void setHard()
         printf("%c[1;34m", 27); // Bold Blue
         cout << "Retype the col size: " << endl;
         printf("%c[0;30m", 27); // Black
-        cin >> g_col;
+        while (1)
+        {
+            cin >> g_col;
+            if (cin.fail())
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                cout << "Error" << endl;
+                continue;
+            }
+            break;
+        }
     }
     system("clear");
     cout << "Set the quantity of mines" << endl;
     printf("%c[1;34m", 27); // Bold Blue
     cout << "Quantity of mines: ";
     printf("%c[0;30m", 27); // Black
-    cin >> g_mine;
+    while (1)
+    {
+        cin >> g_mine;
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');
+            cout << "Error" << endl;
+            continue;
+        }
+        break;
+    }
     
     // 输入的地雷数不应该大于棋盘大小的一半
     while ((g_mine > g_col * g_row / 2) || (g_mine <= 0))
@@ -193,7 +270,18 @@ void setHard()
             printf("%c[1;34m", 27); // Bold Blue
             cout << "Retype the quantity of mines: " << endl;
             printf("%c[0;30m", 27); // Black
-            cin >> g_mine;
+            while (1)
+            {
+                cin >> g_mine;
+                if (cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                    cout << "Error" << endl;
+                    continue;
+                }
+                break;
+            }
         }
         else if (g_mine > g_col * g_row / 2)
         {
@@ -202,7 +290,18 @@ void setHard()
             printf("%c[1;34m", 27); // Bold Blue
             cout << "Retype the quantity of mines: " << endl;
             printf("%c[0;30m", 27); // Black
-            cin >> g_mine;
+            while (1)
+            {
+                cin >> g_mine;
+                if (cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+                    cout << "Error" << endl;
+                    continue;
+                }
+                break;
+            }
         }
     }
     
