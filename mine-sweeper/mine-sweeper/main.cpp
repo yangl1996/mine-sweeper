@@ -83,121 +83,66 @@ void writelb(int time, int row, int col, int mine)
         }
         else
         {
-        // 如果比排行榜中每一个都高
-        if (current_score > record_score[0])
-        {
-            for (int i = number_of_records; i >= 1; i--)
+            // 如果比排行榜中每一个都高
+            if (current_score > record_score[0])
             {
-                record_row[i] = record_row[i - 1];
-                record_col[i] = record_col[i - 1];
-                record_mine[i] = record_mine[i - 1];
-                record_time[i] = record_time[i - 1];
-                record_score[i] = record_score[i - 1];
-                strcpy (record_name[i], record_name[i - 1]);
-            }
-            record_row[0] = row;
-            record_col[0] = col;
-            record_mine[0] = mine;
-            record_time[0] = time;
-            record_score[0] = current_score;
-            
-            // 记录名字
-            printf("%c[1;31m", 27); // Bold Red
-            cout << "You have entered the leaderboard!" << endl;
-            cout << "What's your name? (no space, please)";
-            printf("%c[0;30m", 27); // Bold Red
-            cout << endl << "Name: ";
-            cin >> record_name[0];
-            cin.get();
-            
-            // 写入新的排行榜
-            ofstream leaderboard ("ms-leaderboard.txt");
-            if (leaderboard.is_open())
-            {
-                int buffer_len = 0;
-                if (number_of_records + 1 > 5)
+                for (int i = number_of_records; i >= 1; i--)
                 {
-                    buffer_len = 5;
+                    record_row[i] = record_row[i - 1];
+                    record_col[i] = record_col[i - 1];
+                    record_mine[i] = record_mine[i - 1];
+                    record_time[i] = record_time[i - 1];
+                    record_score[i] = record_score[i - 1];
+                    strcpy (record_name[i], record_name[i - 1]);
                 }
-                else
-                {
-                    buffer_len = number_of_records + 1;
-                }
-                leaderboard << buffer_len << endl;
-                for (int i = 0; i < buffer_len; i++)
-                {
-                    leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
-                }
-            }
-
-            return;
-        }
-        
-        // 如果比排行榜中每一个都差
-        if (current_score <= record_score[number_of_records - 1])
-        {
-            record_row[number_of_records] = row;
-            record_col[number_of_records] = col;
-            record_mine[number_of_records] = mine;
-            record_time[number_of_records] = time;
-            record_score[number_of_records] = current_score;
-            
-            if (number_of_records < 5)
-            {
+                record_row[0] = row;
+                record_col[0] = col;
+                record_mine[0] = mine;
+                record_time[0] = time;
+                record_score[0] = current_score;
+                
                 // 记录名字
                 printf("%c[1;31m", 27); // Bold Red
                 cout << "You have entered the leaderboard!" << endl;
                 cout << "What's your name? (no space, please)";
                 printf("%c[0;30m", 27); // Bold Red
                 cout << endl << "Name: ";
-                cin >> record_name[number_of_records];
+                cin >> record_name[0];
                 cin.get();
+                
+                // 写入新的排行榜
+                ofstream leaderboard ("ms-leaderboard.txt");
+                if (leaderboard.is_open())
+                {
+                    int buffer_len = 0;
+                    if (number_of_records + 1 > 5)
+                    {
+                        buffer_len = 5;
+                    }
+                    else
+                    {
+                        buffer_len = number_of_records + 1;
+                    }
+                    leaderboard << buffer_len << endl;
+                    for (int i = 0; i < buffer_len; i++)
+                    {
+                        leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
+                    }
+                }
+                
+                return;
             }
             
-            // 写入新的排行榜
-            ofstream leaderboard ("ms-leaderboard.txt");
-            if (leaderboard.is_open())
+            // 如果比排行榜中每一个都差
+            if (current_score <= record_score[number_of_records - 1])
             {
-                int buffer_len = 0;
-                if (number_of_records + 1 > 5)
-                {
-                    buffer_len = 5;
-                }
-                else
-                {
-                    buffer_len = number_of_records + 1;
-                }
-                leaderboard << buffer_len << endl;
-                for (int i = 0; i < buffer_len; i++)
-                {
-                    leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
-                }
-            }
-
-            return;
-            
-        }
-        
-        // 其他情况
-        for (int i = 0; i < number_of_records; i++)
-        {
-            if (current_score <= record_score[i] && current_score > record_score[i + 1])
-            {
-                for (int k = number_of_records; k >= i + 2; k--)
-                {
-                    record_row[k] = record_row[k - 1];
-                    record_col[k] = record_col[k - 1];
-                    record_mine[k] = record_mine[k - 1];
-                    record_time[k] = record_time[k - 1];
-                    record_score[k] = record_score[k - 1];
-                    strcpy (record_name[k], record_name[k - 1]);
-                }
-                record_row[i + 1] = row;
-                record_col[i + 1] = col;
-                record_mine[i + 1] = mine;
-                record_time[i + 1] = time;
-                record_score[i + 1] = current_score;
-                if (i + 1 < 5)
+                record_row[number_of_records] = row;
+                record_col[number_of_records] = col;
+                record_mine[number_of_records] = mine;
+                record_time[number_of_records] = time;
+                record_score[number_of_records] = current_score;
+                
+                if (number_of_records < 5)
                 {
                     // 记录名字
                     printf("%c[1;31m", 27); // Bold Red
@@ -205,12 +150,67 @@ void writelb(int time, int row, int col, int mine)
                     cout << "What's your name? (no space, please)";
                     printf("%c[0;30m", 27); // Bold Red
                     cout << endl << "Name: ";
-                    cin >> record_name[i + 1];
+                    cin >> record_name[number_of_records];
                     cin.get();
-                    break;
+                }
+                
+                // 写入新的排行榜
+                ofstream leaderboard ("ms-leaderboard.txt");
+                if (leaderboard.is_open())
+                {
+                    int buffer_len = 0;
+                    if (number_of_records + 1 > 5)
+                    {
+                        buffer_len = 5;
+                    }
+                    else
+                    {
+                        buffer_len = number_of_records + 1;
+                    }
+                    leaderboard << buffer_len << endl;
+                    for (int i = 0; i < buffer_len; i++)
+                    {
+                        leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
+                    }
+                }
+
+                return;
+            
+            }
+        
+            // 其他情况
+            for (int i = 0; i < number_of_records; i++)
+            {
+                if (current_score <= record_score[i] && current_score > record_score[i + 1])
+                {
+                    for (int k = number_of_records; k >= i + 2; k--)
+                    {
+                        record_row[k] = record_row[k - 1];
+                        record_col[k] = record_col[k - 1];
+                        record_mine[k] = record_mine[k - 1];
+                        record_time[k] = record_time[k - 1];
+                        record_score[k] = record_score[k - 1];
+                        strcpy (record_name[k], record_name[k - 1]);
+                    }
+                    record_row[i + 1] = row;
+                    record_col[i + 1] = col;
+                    record_mine[i + 1] = mine;
+                    record_time[i + 1] = time;
+                    record_score[i + 1] = current_score;
+                    if (i + 1 < 5)
+                    {
+                        // 记录名字
+                        printf("%c[1;31m", 27); // Bold Red
+                        cout << "You have entered the leaderboard!" << endl;
+                        cout << "What's your name? (no space, please)";
+                        printf("%c[0;30m", 27); // Bold Red
+                        cout << endl << "Name: ";
+                        cin >> record_name[i + 1];
+                        cin.get();
+                        break;
+                    }
                 }
             }
-        }
         }
         
         // 写入新的排行榜
