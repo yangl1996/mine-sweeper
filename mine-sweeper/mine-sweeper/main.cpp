@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <cstring>
 #include <cstdlib>
 #include <termios.h>
 #include <stdio.h>
@@ -13,6 +14,335 @@ using namespace std;
 int uncovered[52][52] = {0};  // 已翻开的部分（需要在递归中进行操作）
 bool firstuncover = true; // 递归时用于记录这是不是第一次翻开
 int g_row = 10, g_col = 10, g_mine = 10;
+
+// 用于生成排行榜
+void writelb(int time, int row, int col, int mine)
+{
+    ifstream leaderboardnew ("ms-leaderboard.txt");
+    if (!leaderboardnew.is_open())
+    {
+        leaderboardnew.close();
+        ofstream leaderboardnew ("ms-leaderboard.txt");
+        leaderboardnew << "0" << endl;
+        leaderboardnew.close();
+    }
+    leaderboardnew.close();
+    ifstream leaderboard ("ms-leaderboard.txt");
+    if (leaderboard.is_open())
+    {
+        int number_of_records;
+        int current_score = row * col * mine / time;
+        leaderboard >> number_of_records;
+        int record_row[10], record_col[10], record_mine[10], record_time[10], record_score[10];
+        char record_name[10][50];
+        for (int i = 0; i < number_of_records; i++)
+        {
+            leaderboard >> record_row[i] >> record_col[i] >> record_mine[i] >> record_time[i] >> record_score[i] >> record_name[i];
+        }
+        leaderboard.close();
+        
+        // 如果原来是空的文件
+        if (number_of_records == 0)
+        {
+            record_row[0] = row;
+            record_col[0] = col;
+            record_mine[0] = mine;
+            record_time[0] = time;
+            record_score[0] = current_score;
+            
+            // 记录名字
+            printf("%c[1;31m", 27); // Bold Red
+            cout << "You have entered the leaderboard!" << endl;
+            cout << "What's your name? (no space, please)";
+            printf("%c[0;30m", 27); // Bold Red
+            cout << endl << "Name: ";
+            cin >> record_name[0];
+            cin.get();
+            
+            // 写入新的排行榜
+            ofstream leaderboard ("ms-leaderboard.txt");
+            if (leaderboard.is_open())
+            {
+                int buffer_len = 0;
+                if (number_of_records + 1 > 5)
+                {
+                    buffer_len = 5;
+                }
+                else
+                {
+                    buffer_len = number_of_records + 1;
+                }
+                leaderboard << buffer_len << endl;
+                for (int i = 0; i < buffer_len; i++)
+                {
+                    leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
+                }
+            }
+
+            return;
+        }
+        else
+        {
+        // 如果比排行榜中每一个都高
+        if (current_score > record_score[0])
+        {
+            for (int i = number_of_records; i >= 1; i--)
+            {
+                record_row[i] = record_row[i - 1];
+                record_col[i] = record_col[i - 1];
+                record_mine[i] = record_mine[i - 1];
+                record_time[i] = record_time[i - 1];
+                record_score[i] = record_score[i - 1];
+                strcpy (record_name[i], record_name[i - 1]);
+            }
+            record_row[0] = row;
+            record_col[0] = col;
+            record_mine[0] = mine;
+            record_time[0] = time;
+            record_score[0] = current_score;
+            
+            // 记录名字
+            printf("%c[1;31m", 27); // Bold Red
+            cout << "You have entered the leaderboard!" << endl;
+            cout << "What's your name? (no space, please)";
+            printf("%c[0;30m", 27); // Bold Red
+            cout << endl << "Name: ";
+            cin >> record_name[0];
+            cin.get();
+            
+            // 写入新的排行榜
+            ofstream leaderboard ("ms-leaderboard.txt");
+            if (leaderboard.is_open())
+            {
+                int buffer_len = 0;
+                if (number_of_records + 1 > 5)
+                {
+                    buffer_len = 5;
+                }
+                else
+                {
+                    buffer_len = number_of_records + 1;
+                }
+                leaderboard << buffer_len << endl;
+                for (int i = 0; i < buffer_len; i++)
+                {
+                    leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
+                }
+            }
+
+            return;
+        }
+        
+        // 如果比排行榜中每一个都差
+        if (current_score <= record_score[number_of_records - 1])
+        {
+            record_row[number_of_records] = row;
+            record_col[number_of_records] = col;
+            record_mine[number_of_records] = mine;
+            record_time[number_of_records] = time;
+            record_score[number_of_records] = current_score;
+            
+            if (number_of_records < 5)
+            {
+                // 记录名字
+                printf("%c[1;31m", 27); // Bold Red
+                cout << "You have entered the leaderboard!" << endl;
+                cout << "What's your name? (no space, please)";
+                printf("%c[0;30m", 27); // Bold Red
+                cout << endl << "Name: ";
+                cin >> record_name[number_of_records];
+                cin.get();
+            }
+            
+            // 写入新的排行榜
+            ofstream leaderboard ("ms-leaderboard.txt");
+            if (leaderboard.is_open())
+            {
+                int buffer_len = 0;
+                if (number_of_records + 1 > 5)
+                {
+                    buffer_len = 5;
+                }
+                else
+                {
+                    buffer_len = number_of_records + 1;
+                }
+                leaderboard << buffer_len << endl;
+                for (int i = 0; i < buffer_len; i++)
+                {
+                    leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
+                }
+            }
+
+            return;
+            
+        }
+        
+        // 其他情况
+        for (int i = 0; i < number_of_records; i++)
+        {
+            if (current_score <= record_score[i] && current_score > record_score[i + 1])
+            {
+                for (int k = number_of_records; k >= i + 2; k--)
+                {
+                    record_row[k] = record_row[k - 1];
+                    record_col[k] = record_col[k - 1];
+                    record_mine[k] = record_mine[k - 1];
+                    record_time[k] = record_time[k - 1];
+                    record_score[k] = record_score[k - 1];
+                    strcpy (record_name[k], record_name[k - 1]);
+                }
+                record_row[i + 1] = row;
+                record_col[i + 1] = col;
+                record_mine[i + 1] = mine;
+                record_time[i + 1] = time;
+                record_score[i + 1] = current_score;
+                if (i + 1 < 5)
+                {
+                    // 记录名字
+                    printf("%c[1;31m", 27); // Bold Red
+                    cout << "You have entered the leaderboard!" << endl;
+                    cout << "What's your name? (no space, please)";
+                    printf("%c[0;30m", 27); // Bold Red
+                    cout << endl << "Name: ";
+                    cin >> record_name[i + 1];
+                    cin.get();
+                    break;
+                }
+            }
+        }
+        }
+        
+        // 写入新的排行榜
+        ofstream leaderboard ("ms-leaderboard.txt");
+        if (leaderboard.is_open())
+        {
+            int buffer_len = 0;
+            if (number_of_records + 1 > 5)
+            {
+                buffer_len = 5;
+            }
+            else
+            {
+                buffer_len = number_of_records + 1;
+            }
+            leaderboard << buffer_len << endl;
+            for (int i = 0; i < buffer_len; i++)
+            {
+                leaderboard << record_row[i] << endl << record_col[i] << endl << record_mine[i] << endl << record_time[i] << endl << record_score[i] << endl << record_name[i] << endl;
+            }
+        }
+    }
+    return;
+}
+
+// 用于显示排行榜
+void displb()
+{
+    ifstream leaderboard ("ms-leaderboard.txt");
+    if (leaderboard.is_open())
+    {
+        int number_of_records;
+        leaderboard >> number_of_records;
+        int record_row[10], record_col[10], record_mine[10], record_time[10], record_score[10];
+        char record_name[10][50];
+        for (int i = 0; i < number_of_records; i++)
+        {
+            leaderboard >> record_row[i] >> record_col[i] >> record_mine[i] >> record_time[i] >> record_score[i] >> record_name[i];
+        }
+        leaderboard.close();
+        
+        // 用于控制输出不需要回车
+        struct termios stored_settings;
+        struct termios new_settings;
+        tcgetattr (0, &stored_settings);
+        new_settings = stored_settings;
+        new_settings.c_lflag &= (~ICANON);
+        new_settings.c_cc[VTIME] = 0;
+        new_settings.c_cc[VMIN] = 1;
+        tcsetattr (0, TCSANOW, &new_settings);
+        
+        int currentSelected = 0;
+        
+        while (1)
+        {
+            system("clear");
+            
+            printf("%c[1;31m", 27); // Bold Red
+            cout << "     Leaderboard" << endl << endl;
+            printf("%c[0;30m", 27); // Black
+            
+            printf("%c[0;34m", 27); // Blue
+            cout << "Rank:  ";
+            printf("%c[0;30m", 27);
+            
+            cout << currentSelected + 1 << endl;
+            
+            printf("%c[0;34m", 27); // Blue
+            cout << "Size:  ";
+            printf("%c[0;30m", 27);
+            
+            cout << record_row[currentSelected] << "*" << record_col[currentSelected] << endl;
+            
+            printf("%c[0;34m", 27); // Blue
+            cout << "Time:  ";
+            printf("%c[0;30m", 27);
+            
+            cout << record_time[currentSelected] << endl;
+            
+            printf("%c[0;34m", 27); // Blue
+            cout << "Score: ";
+            printf("%c[0;30m", 27);
+            
+            cout << record_score[currentSelected] << endl;
+            
+            printf("%c[0;34m", 27); // Blue
+            cout << "Name:  ";
+            printf("%c[0;30m", 27);
+            
+            cout << record_name[currentSelected] << endl << endl;
+            
+            cout << endl << "Use arrow key to scroll" << endl;
+            cout << "...Press Q to return..." << endl;
+            int sel = 0;
+            sel = getchar();
+            switch (sel)
+            {
+                case 113:
+                {
+                    tcsetattr (0, TCSANOW, &stored_settings);
+                    return;
+                }
+                case 91:
+                {
+                    sel = getchar();
+                    switch (sel)
+                    {
+                        case 66: // Up
+                        {
+                            currentSelected++;
+                            if (currentSelected == number_of_records)
+                            {
+                                currentSelected = 0;
+                            }
+                            break;
+                        }
+                        case 65: // Down
+                        {
+                            currentSelected--;
+                            if (currentSelected == -1)
+                            {
+                                currentSelected = number_of_records - 1;
+                            }
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
 
 // 用于显示帮助
 void dispHelp()
@@ -931,10 +1261,25 @@ int game()
         }
         else
         {
-            cout << usedHour << ":" << usedMin << ":" << usedSec << endl << endl;
+            cout << usedHour << ":" << usedMin << ":" << usedSec << endl;
         }
+        // 输出需要回车
+        tcsetattr (0, TCSANOW, &stored_settings);
+
+        writelb((int)usedTime, row, col, nummine);
+        
+        // 用于控制输出不需要回车
+        struct termios stored_settings;
+        struct termios new_settings;
+        tcgetattr (0, &stored_settings);
+        new_settings = stored_settings;
+        new_settings.c_lflag &= (~ICANON);
+        new_settings.c_cc[VTIME] = 0;
+        new_settings.c_cc[VMIN] = 1;
+        tcsetattr (0, TCSANOW, &new_settings);
     }
-    cout << "...Press any key to return..." << endl;
+    
+    cout << endl <<  "...Press any key to return..." << endl;
     getchar();
     
     // 结束控制输出不需要回车
@@ -996,12 +1341,22 @@ int main()
         if (currentMenuSelection == 4)
         {
             printf("%c[1;30m", 27); // Black Bold
-            cout << ">> 4 - EXIT" << endl;
+            cout << ">> 4 - LEADERBOARD" << endl;
             printf("%c[0;30m", 27); // Black
         }
         else
         {
-            cout << "   4 - EXIT" << endl;
+            cout << "   4 - LEADERBOARD" << endl;
+        }
+        if (currentMenuSelection == 5)
+        {
+            printf("%c[1;30m", 27); // Black Bold
+            cout << ">> 5 - EXIT" << endl;
+            printf("%c[0;30m", 27); // Black
+        }
+        else
+        {
+            cout << "   5 - EXIT" << endl;
         }
     
         // 用于控制输出不需要回车
@@ -1044,6 +1399,11 @@ int main()
                     }
                     case 4:
                     {
+                        displb();
+                        break;
+                    }
+                    case 5:
+                    {
                         system("clear");
                         return 0;
                     }
@@ -1059,7 +1419,7 @@ int main()
                     {
                         if (currentMenuSelection == 1)
                         {
-                            currentMenuSelection = 4;
+                            currentMenuSelection = 5;
                         }
                         else
                         {
@@ -1069,7 +1429,7 @@ int main()
                     }
                     case 66: // DOWN
                     {
-                        if (currentMenuSelection == 4)
+                        if (currentMenuSelection == 5)
                         {
                             currentMenuSelection = 1;
                         }
@@ -1102,6 +1462,11 @@ int main()
                 break;
             }
             case 52:
+            {
+                displb();
+                break;
+            }
+            case 53:
             {
                 system("clear");
                 return 0;
