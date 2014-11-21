@@ -252,6 +252,11 @@ void displb()
         }
         leaderboard.close();
         
+        if (number_of_records == 0)
+        {
+            return;
+        }
+        
         // 用于控制输出不需要回车
         struct termios stored_settings;
         struct termios new_settings;
@@ -303,6 +308,7 @@ void displb()
             cout << record_name[currentSelected] << endl << endl;
             
             cout << endl << "Use arrow key to scroll" << endl;
+            cout << "   Press C to clear" << endl;
             cout << "...Press Q to return..." << endl;
             int sel = 0;
             sel = getchar();
@@ -312,6 +318,31 @@ void displb()
                 {
                     tcsetattr (0, TCSANOW, &stored_settings);
                     return;
+                }
+                case 99:
+                {
+                    system("clear");
+                    cout << "Are you sure to clear the leaderboard? (Y / N)" << endl;
+                    int choose = 0;
+                    while (choose != 121 && choose != 110)
+                    {
+                        choose = getchar();
+                        if (choose == 121)
+                        {
+                            ofstream leaderboardnew ("ms-leaderboard.txt");
+                            if (leaderboardnew.is_open())
+                            {
+                                leaderboardnew << "0" << endl;
+                                leaderboardnew.close();
+                            }
+                            return;
+                        }
+                        else if (choose == 110)
+                        {
+                            break;
+                        }
+                    }
+                    break;
                 }
                 case 91:
                 {
