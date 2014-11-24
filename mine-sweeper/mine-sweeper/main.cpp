@@ -1476,12 +1476,14 @@ int main()
             case 49:
             {
                 system("clear");
+                currentMenuSelection = 1;
                 game();
                 break;
             }
             case 50:
             {
                 system("clear");
+                currentMenuSelection = 2;
                 tcsetattr (0, TCSANOW, &stored_settings);
                 setHard();
                 break;
@@ -1489,12 +1491,14 @@ int main()
             case 51:
             {
                 system("clear");
+                currentMenuSelection = 3;
                 dispHelp();
                 break;
             }
             case 52:
             {
                 displb();
+                currentMenuSelection = 4;
                 break;
             }
             case 53:
