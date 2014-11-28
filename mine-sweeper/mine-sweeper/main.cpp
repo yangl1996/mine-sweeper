@@ -383,7 +383,7 @@ void dispHelp()
     cout << "             MINE SWEEPER" << endl;
     printf("%c[0;30m", 27); // Black
     cout << "Welcome to Mine Sweeper! These are the" << endl;
-    cout << "commands you will use durning the play." << endl << endl;
+    cout << "commands you will use during the play." << endl << endl;
     cout << "Up key     - Move the cursor up" << endl;
     cout << "Down key   - Move the cursor down" << endl;
     cout << "Left key   - Move the cursor left" << endl;
@@ -1032,6 +1032,7 @@ int game()
         paint(status, row, col);
         // 输出地雷数
         cout << "Total: " << nummine << ", Left: " << nummine - usedflag << endl;
+        cout << " Press H for help" << endl;
         if (justLoaded)
         {
             cout << "Game Loaded" << endl;
@@ -1069,6 +1070,11 @@ int game()
         
         switch (comm)
         {
+            case 104:
+            {
+                dispHelp();
+                break;
+            }
             case 115:            // Save
             {
                 cout << endl;
