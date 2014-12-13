@@ -1029,7 +1029,7 @@ int game()
         status[cursor_a][cursor_b] = 11;
         // 棋盘状态生成完毕
 
-        paint(status, row, col);
+        paint(status, col, row);
         // 输出地雷数
         cout << "Total: " << nummine << ", Left: " << nummine - usedflag << endl;
         cout << " Press H for help" << endl;
